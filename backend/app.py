@@ -20,7 +20,19 @@ def create_app(config_name='default'):
     jwt.init_app(app)
     
     # Setup CORS
-    CORS(app, origins=app.config['CORS_ORIGINS'], supports_credentials=True)
+    cors_origins = app.config.get('CORS_ORIGINS', ['http://localhost:5173'])
+    if isinstance(cors_origins, str):
+        cors_origins = [origin.strip() for origin in cors_origins.split(',')]
+    
+    # Add common origins for development and production
+    allowed_origins = cors_origins + [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'https://team-pulse-saas.netlify.app',
+        'https://teampulse-saas.netlify.app'
+    ]
+    
+    CORS(app, origins=allowed_origins, supports_credentials=True)
     
     # Initialize migrations
     Migrate(app, db)
@@ -49,10 +61,21 @@ def create_app(config_name='default'):
     # Health check endpoint
     @app.route('/health', methods=['GET'])
     def health_check():
-        return jsonify({
-            'status': 'healthy',
-            'message': 'TeamPulse API is running'
-        }), 200
+        try:
+            cors_origins = app.config.get('CORS_ORIGINS', 'Not set')
+            debug_mode = app.config.get('DEBUG', False)
+            return jsonify({
+                'status': 'healthy',
+                'message': 'TeamPulse API is running',
+                'cors_origins': cors_origins,
+                'debug_mode': debug_mode,
+                'version': 'updated'
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': f'Health check error: {str(e)}'
+            }), 500
     
     # Root endpoint
     @app.route('/', methods=['GET'])
@@ -148,7 +171,7 @@ if __name__ == '__main__':
     )
 
 # For Render deployment - create app instance
-app = create_app()
+app = create_app('production')
 
 # Add startup logging for debugging
 print("TeamPulse API starting up...")

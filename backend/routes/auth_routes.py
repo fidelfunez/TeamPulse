@@ -9,30 +9,35 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 @auth_bp.route('/login', methods=['POST'])
 def login():
     """User login endpoint"""
-    data = request.get_json()
-    
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'message': 'Email and password are required'}), 400
-    
-    email = data['email'].lower()
-    password = data['password']
-    
-    user = User.query.filter_by(email=email).first()
-    
-    if not user or not user.check_password(password):
-        return jsonify({'message': 'Invalid email or password'}), 401
-    
-    if not user.is_active:
-        return jsonify({'message': 'Account is deactivated'}), 401
-    
-    # Create access token
-    access_token = create_user_token(user.id, user.email, user.role)
-    
-    return jsonify({
-        'message': 'Login successful',
-        'access_token': access_token,
-        'user': user.to_dict()
-    }), 200
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('email') or not data.get('password'):
+            return jsonify({'message': 'Email and password are required'}), 400
+        
+        email = data['email'].lower()
+        password = data['password']
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.check_password(password):
+            return jsonify({'message': 'Invalid email or password'}), 401
+        
+        if not user.is_active:
+            return jsonify({'message': 'Account is deactivated'}), 401
+        
+        # Create access token
+        access_token = create_user_token(user.id, user.email, user.role)
+        
+        return jsonify({
+            'message': 'Login successful',
+            'access_token': access_token,
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        return jsonify({'message': 'Internal server error', 'error': str(e)}), 500
 
 @auth_bp.route('/register', methods=['POST'])
 @admin_required
