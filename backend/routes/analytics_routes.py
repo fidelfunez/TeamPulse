@@ -9,6 +9,64 @@ from sqlalchemy import func, and_
 
 analytics_bp = Blueprint('analytics', __name__, url_prefix='/api/analytics')
 
+@analytics_bp.route('/dashboard-basic', methods=['GET'])
+def get_basic_dashboard_data():
+    """Get basic dashboard stats (all authenticated users)"""
+    try:
+        from flask_jwt_extended import jwt_required, get_jwt_identity
+        
+        jwt_required()
+        user_id = get_jwt_identity()
+        
+        # Get date range (default to last 30 days)
+        days = request.args.get('days', 30, type=int)
+        end_date = date.today()
+        start_date = end_date - timedelta(days=days)
+        
+        # Total users
+        total_users = User.query.filter_by(is_active=True).count()
+        
+        # Total teams
+        total_teams = Team.query.count()
+        
+        # Total projects
+        total_projects = Project.query.count()
+        active_projects = Project.query.filter_by(status='active').count()
+        
+        # Check-in statistics
+        checkins = CheckIn.query.filter(
+            CheckIn.check_in_date >= start_date,
+            CheckIn.check_in_date <= end_date
+        ).all()
+        
+        total_checkins = len(checkins)
+        
+        # Recent check-ins (last 7 days)
+        recent_start = end_date - timedelta(days=7)
+        recent_checkins = CheckIn.query.filter(
+            CheckIn.check_in_date >= recent_start,
+            CheckIn.check_in_date <= end_date
+        ).count()
+        
+        return jsonify({
+            'overview': {
+                'total_users': total_users,
+                'total_teams': total_teams,
+                'total_projects': total_projects,
+                'active_projects': active_projects,
+                'total_checkins': total_checkins,
+                'recent_checkins': recent_checkins
+            },
+            'date_range': {
+                'start': start_date.isoformat(),
+                'end': end_date.isoformat(),
+                'days': days
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'message': 'Error fetching dashboard data', 'error': str(e)}), 500
+
 @analytics_bp.route('/dashboard', methods=['GET'])
 @admin_required
 def get_dashboard_data():

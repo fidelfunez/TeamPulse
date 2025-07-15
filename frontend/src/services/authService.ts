@@ -1,5 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL || 'https://teampulse-backend.onrender.com';
 
+// Add CORS proxy for local development
+const getApiUrl = (endpoint: string) => {
+  const baseUrl = API_URL;
+  // Use CORS proxy for local development
+  if (window.location.hostname === 'localhost') {
+    return `https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}`;
+  }
+  return `${baseUrl}${endpoint}`;
+};
+
 export interface LoginResponse {
   access_token: string;
   user: {
@@ -38,7 +48,7 @@ class AuthService {
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +73,7 @@ class AuthService {
 
   async register(email: string, password: string, name: string, role: string): Promise<RegisterResponse> {
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +99,7 @@ class AuthService {
       const token = localStorage.getItem('token');
       if (!token) return null;
 
-      const response = await fetch(`${API_URL}/api/auth/me`, {
+      const response = await fetch(getApiUrl('/api/auth/me'), {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
@@ -105,7 +115,6 @@ class AuthService {
       return user;
     } catch (error) {
       console.error('Get current user error:', error);
-      localStorage.removeItem('token');
       localStorage.removeItem('user');
       return null;
     }
