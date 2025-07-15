@@ -82,17 +82,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     }
   };
 
-  const getMoodText = (rating: number): string => {
-    switch (rating) {
-      case 1: return '😢 Terrible';
-      case 2: return '😔 Bad';
-      case 3: return '😐 Okay';
-      case 4: return '🙂 Good';
-      case 5: return '😊 Great';
-      default: return 'Select mood...';
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
