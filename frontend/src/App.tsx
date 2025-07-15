@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginForm from './components/Auth/LoginForm';
 import RegisterForm from './components/Auth/RegisterForm';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -66,37 +66,35 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route 
-            path="/login" 
-            element={
-              user ? <Navigate to="/dashboard" replace /> : 
-              <LoginForm onLogin={handleLogin} />
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              user ? <Navigate to="/dashboard" replace /> : 
-              <RegisterForm onRegister={handleRegister} />
-            } 
-          />
-          <Route 
-            path="/dashboard" 
-            element={
-              user ? <Dashboard user={user} onLogout={handleLogout} /> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/" 
-            element={<Navigate to={user ? "/dashboard" : "/login"} replace />} 
-          />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            user ? <Navigate to="/dashboard" replace /> : 
+            <LoginForm onLogin={handleLogin} />
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            user ? <Navigate to="/dashboard" replace /> : 
+            <RegisterForm onRegister={handleRegister} />
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            user ? <Dashboard user={user} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/" 
+          element={<Navigate to={user ? "/dashboard" : "/login"} replace />} 
+        />
+      </Routes>
+    </div>
   );
 }
 
