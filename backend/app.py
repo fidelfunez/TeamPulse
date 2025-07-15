@@ -148,4 +148,10 @@ if __name__ == '__main__':
     )
 
 # For Render deployment - create app instance
-app = create_app() 
+app = create_app()
+
+# Add startup logging for debugging
+print("TeamPulse API starting up...")
+print(f"Database URI: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not set')}")
+print(f"CORS Origins: {app.config.get('CORS_ORIGINS', 'Not set')}")
+print(f"Debug mode: {app.config.get('DEBUG', False)}") 

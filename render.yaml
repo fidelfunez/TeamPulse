@@ -14,7 +14,9 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://your-netlify-site.netlify.app
+        value: https://team-pulse-saas.netlify.app
+      - key: FLASK_APP
+        value: app.py
       - key: FLASK_ENV
         value: production
       - key: DATABASE_URL
