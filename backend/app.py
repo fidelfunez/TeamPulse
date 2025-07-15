@@ -12,6 +12,9 @@ def create_app(config_name='default'):
     """Application factory pattern"""
     app = Flask(__name__)
     
+    # Disable strict slashes to prevent redirects during CORS preflight
+    app.url_map.strict_slashes = False
+    
     # Load configuration
     app.config.from_object(config[config_name])
     
