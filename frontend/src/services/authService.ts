@@ -48,7 +48,7 @@ class AuthService {
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(getApiUrl('/api/auth/login/'), {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ class AuthService {
 
   async register(email: string, password: string, name: string, role: string): Promise<RegisterResponse> {
     try {
-      const response = await fetch(getApiUrl('/api/auth/register/'), {
+      const response = await fetch(getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ class AuthService {
       const token = localStorage.getItem('token');
       if (!token) return null;
 
-      const response = await fetch(getApiUrl('/api/auth/me/'), {
+      const response = await fetch(getApiUrl('/api/auth/me'), {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
