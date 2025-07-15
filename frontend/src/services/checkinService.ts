@@ -56,7 +56,7 @@ class CheckInService {
 
   async submitCheckIn(data: CheckInData): Promise<CheckInResponse> {
     try {
-      const response = await fetch(getApiUrl('/api/checkins'), {
+      const response = await fetch(getApiUrl('/api/checkins/'), {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(data),
@@ -77,8 +77,8 @@ class CheckInService {
   async getDashboardStats(): Promise<DashboardStats> {
     try {
       // Try the basic endpoint first
-      console.log('Fetching dashboard stats from:', getApiUrl('/api/analytics/dashboard-basic'));
-      const response = await fetch(getApiUrl('/api/analytics/dashboard-basic'), {
+      console.log('Fetching dashboard stats from:', getApiUrl('/api/analytics/dashboard-basic/'));
+      const response = await fetch(getApiUrl('/api/analytics/dashboard-basic/'), {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
@@ -101,7 +101,7 @@ class CheckInService {
       // If basic endpoint fails, try admin endpoint
       if (response.status === 401 || response.status === 403) {
         console.log('Basic endpoint requires admin, trying admin endpoint...');
-        const adminResponse = await fetch(getApiUrl('/api/analytics/dashboard'), {
+        const adminResponse = await fetch(getApiUrl('/api/analytics/dashboard/'), {
           method: 'GET',
           headers: this.getAuthHeaders(),
         });
@@ -146,7 +146,7 @@ class CheckInService {
 
   async getMyCheckIns(): Promise<any[]> {
     try {
-      const response = await fetch(getApiUrl('/api/checkins/my-checkins'), {
+      const response = await fetch(getApiUrl('/api/checkins/my-checkins/'), {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
