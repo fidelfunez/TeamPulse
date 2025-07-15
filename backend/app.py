@@ -198,6 +198,19 @@ if __name__ == '__main__':
 # For Render deployment - create app instance
 app = create_app('production')
 
+# Initialize database tables and sample data for production
+with app.app_context():
+    try:
+        print("Creating database tables...")
+        db.create_all()
+        print("Database tables created successfully")
+        
+        print("Initializing sample data...")
+        init_db()
+        print("Sample data initialized successfully")
+    except Exception as e:
+        print(f"Database initialization error: {str(e)}")
+
 # Add startup logging for debugging
 print("TeamPulse API starting up...")
 print(f"Database URI: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not set')}")
