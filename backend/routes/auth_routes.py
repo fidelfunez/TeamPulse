@@ -10,15 +10,19 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 def login():
     """User login endpoint"""
     try:
+        print("Login attempt started")
         data = request.get_json()
+        print(f"Received data: {data}")
         
         if not data or not data.get('email') or not data.get('password'):
             return jsonify({'message': 'Email and password are required'}), 400
         
         email = data['email'].lower()
         password = data['password']
+        print(f"Looking for user with email: {email}")
         
         user = User.query.filter_by(email=email).first()
+        print(f"User found: {user is not None}")
         
         if not user or not user.check_password(password):
             return jsonify({'message': 'Invalid email or password'}), 401
@@ -26,9 +30,11 @@ def login():
         if not user.is_active:
             return jsonify({'message': 'Account is deactivated'}), 401
         
+        print("Creating access token")
         # Create access token
         access_token = create_user_token(user.id, user.email, user.role)
         
+        print("Login successful")
         return jsonify({
             'message': 'Login successful',
             'access_token': access_token,
@@ -36,7 +42,9 @@ def login():
         }), 200
         
     except Exception as e:
+        import traceback
         print(f"Login error: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
         return jsonify({'message': 'Internal server error', 'error': str(e)}), 500
 
 @auth_bp.route('/register', methods=['POST'])
