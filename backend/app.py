@@ -1,4 +1,5 @@
 import os
+import traceback
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -75,6 +76,30 @@ def create_app(config_name='default'):
             return jsonify({
                 'status': 'error',
                 'message': f'Health check error: {str(e)}'
+            }), 500
+    
+    # Debug endpoint to check database and users
+    @app.route('/debug/users', methods=['GET'])
+    def debug_users():
+        try:
+            from models.user import User
+            users = User.query.all()
+            user_list = []
+            for user in users:
+                user_list.append({
+                    'id': user.id,
+                    'email': user.email,
+                    'role': user.role,
+                    'is_active': user.is_active
+                })
+            return jsonify({
+                'total_users': len(user_list),
+                'users': user_list
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'error': str(e),
+                'traceback': traceback.format_exc()
             }), 500
     
     # Root endpoint
